@@ -1,0 +1,19 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Creates 3 equal-width columns */
+    grid-template-rows: repeat(3, 1fr);    /* Creates 3 equal-height rows */
+    gap: 10px;                             /* Adds space between grid items */
+    width: 300px;                          /* Set a fixed width for the container */
+    aspect-ratio: 1 / 1;                   /* Keeps the container perfectly square */
+}
+
+.grid-item {
+    background-color: #f1f1f1;
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+    /* Center the content vertically and horizontally */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
