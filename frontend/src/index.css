@@ -140,5 +140,5 @@ body {
 
 /* controls */
 .controls { width:100%; display:flex; justify-content:center; align-items:center; gap:20px; }
-.status { margin:0; font-size:1rem; color:#111; }
+.status { margin:0; font-size:1rem; color:#111; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;}
 .reset { padding:8px 20px; border-radius:6px; border:1px solid #ccc; background:#f6f6f6; cursor:pointer; }
