@@ -65,6 +65,7 @@ jobs:
                 platforms: linux/amd64,linux/arm64
                 push: true
                 tags: ${{ steps.meta.outputs.image_uri }}
+                context: ./frontend
 
     deploy-frontend:
         needs: [preflight, build-frontend]
