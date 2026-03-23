@@ -62,13 +62,14 @@ jobs:
             - name: Build and push
               uses: docker/build-push-action@v7
               with:
-                platforms: linux/amd64,linux/arm64
+                context: ./frontend
+                platforms: linux/amd64
                 push: true
+                provenance: false
+                sbom: false
                 tags: |
                     ${{ steps.meta.outputs.image_uri }}
                     ${{ vars.DOCKERHUB_USERNAME }}/tictactoe-frontend:latest
-
-                context: ./frontend
 
     deploy-frontend:
         needs: [preflight, build-frontend]

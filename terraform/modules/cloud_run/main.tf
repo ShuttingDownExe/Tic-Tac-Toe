@@ -41,7 +41,7 @@ resource "google_cloud_run_v2_service" "frontend" {
   }
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 
