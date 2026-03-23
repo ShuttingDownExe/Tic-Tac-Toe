@@ -24,7 +24,7 @@ resource "google_service_account_iam_member" "github_can_act_as_runtime" {
 
 resource "google_iam_workload_identity_pool" "github_pool" {
   project                   = var.project_id
-  workload_identity_pool_id = "github-pool"
+  workload_identity_pool_id = "github-actions-deploy-pool"
   display_name              = "GitHub Actions Pool"
   description               = "OIDC trust for GitHub Actions"
   disabled                  = false

@@ -2,6 +2,7 @@ resource "google_cloud_run_v2_service" "frontend" {
   name     = var.service_name
   location = var.region
   project  = var.project_id
+  deletion_protection = false
 
   template {
     service_account = var.service_account_email
@@ -39,7 +40,6 @@ resource "google_cloud_run_v2_service" "frontend" {
     percent = 100
     type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
   }
-
   lifecycle {
     prevent_destroy = false
   }

@@ -4,7 +4,7 @@ service_name    = "tictactoe-frontend"
 github_owner    = "ShuttingDownExe"
 github_repo     = "Tic-Tac-Toe"
 
-image_uri       = "rishithkumar/tictactoe-frontend:latest"
+image_uri       = "rishithkumar/tictactoe-frontend:dev-2026.03.23.112206"
 
 container_port        = 8080
 cpu                   = "1"
