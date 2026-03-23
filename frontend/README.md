@@ -3,6 +3,25 @@
 Overview
 - This is a Vite + React single-page application (SPA) located at the project root.
 
+Frontend details
+- Project type: React (JSX) + Vite. Source code is under `src/` and static public assets are under `public/`.
+- Important source files:
+  - `src/main.jsx` — app bootstrap + Vite client mount.
+  - `src/App.jsx` — top-level React component / routes.
+  - `src/index.css` — global styles.
+  - `src/assets/` — images and static imports bundled by Vite.
+  - `index.html` — HTML template used by Vite and the build.
+- Development scripts (see `package.json`):
+  - `npm run dev` — start Vite dev server with HMR (default port 5173).
+  - `npm run build` — produce optimized static files into `dist/`.
+  - `npm run preview` — locally preview the production build.
+- Environment & API configuration:
+  - Use Vite-style env vars prefixed with `VITE_` (for example, `VITE_API_URL`). These are baked into the build at compile time.
+  - For runtime-configurable API endpoints, add a small runtime config file (e.g. `public/env-config.js`) or use the optional Docker `start.sh` pattern described below.
+- Assets & public:
+  - Files placed in `public/` are copied as-is to the root of the built site (useful for robots.txt, favicon, or runtime JS config files).
+  - Imports from `src/assets` are processed by Vite and optimized during build.
+
 Key files
 - `package.json` — project metadata and scripts (`dev`, `build`, `preview`).
 - `vite.config.js` — Vite configuration; dev server host/port can be set here.

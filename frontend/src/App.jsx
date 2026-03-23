@@ -1,12 +1,17 @@
 import './index.css'
+import xIcon from './assets/X.svg'
+import oIcon from './assets/O.svg'
 import { useState } from 'react'
 
 
 const Tile = ({value,enabled, onClick}) => {
-  
+  const icon = value === 'X' ? xIcon : value === 'O' ? oIcon : null
+
   return (
     <div className="grid-item">
-      <button disabled={!enabled} onClick={onClick}>{value === null ? '' : value}</button>
+      <button disabled={!enabled} onClick={onClick}>
+        {icon ? <img src={icon} alt={value} className={value === 'X' ? 'x-tile-icon' : 'o-tile-icon'} /> : null}
+      </button>
     </div>
   )
 }
@@ -20,7 +25,6 @@ const checkWinner = (board) => {
   }
   return null
 }
-
 
 const Grid = () => {
   const [board, setBoard] = useState([null,null,null,null,null,null,null,null,null])
@@ -44,19 +48,27 @@ const Grid = () => {
   }
 
   return (
-    <div className="grid-container">
-      {
-        board.map((cellValue, i) => (
+    <div className="game">
+      <div className="board">
+      <div className="grid-container">
+        {board.map((cellValue, i) => (
           <Tile
             key={i}
             value={cellValue}
             enabled={cellValue === null && !winner && !isDraw}
             onClick={() => handleClick(i)}
           />
-        ))
-      }
-      <p> {status} </p>
-      <button onClick={() => reset()}>reset</button>
+        ))}
+      </div>
+
+  <div className="horiz h1" />
+  <div className="horiz h2" />
+</div>
+
+      <div className="controls">
+        <p className="status">{status}</p>
+        <button className="reset" onClick={reset}>reset</button>
+      </div>
     </div>
   )
 }
