@@ -52,4 +52,4 @@ jobs:
         with:
             platforms: linux/amd64,linux/arm64
             push: true
-            tags: ${{ vars.DOCKERHUB_USERNAME }}/tictactoe-frontend:${{ needs.preflight.outputs.version }}
+            tags: ${{ vars.DOCKERHUB_USERNAME }}/tictactoe-frontend:${{github.ref_name}}-${{ needs.preflight.outputs.version }}
