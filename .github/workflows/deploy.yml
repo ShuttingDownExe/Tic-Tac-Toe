@@ -3,6 +3,7 @@ name: Build Containers, Push to Docker Hub
 on:
   push:
     branches: [ main, test, dev ]
+  workflow_dispatch:
 
 jobs:
   preflight:
