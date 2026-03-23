@@ -6,53 +6,99 @@ on:
   workflow_dispatch:
 
 jobs:
-  preflight:
-    runs-on: ubuntu-latest
-    outputs:
-      frontend: ${{ steps.find.outputs.frontend }}
-      backend:  ${{ steps.find.outputs.backend }}
-      version: ${{ steps.version.outputs.version }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+    preflight:
+        runs-on: ubuntu-latest
+        outputs:
+            frontend: ${{ steps.find.outputs.frontend }}
+            backend:  ${{ steps.find.outputs.backend }}
+            version: ${{ steps.version.outputs.version }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                fetch-depth: 0
 
-      - name: Find changed files
-        id: find
-        run: |
-          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} || true)
-          echo "frontend=$([[ $CHANGED =~ ^frontend/ ]] && echo true || echo false)" >> $GITHUB_OUTPUT
-          echo "backend=$([[ $CHANGED =~ ^backend/ ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+            - name: Find changed files
+              id: find
+              run: |
+                CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} || true)
+                echo "frontend=$([[ $CHANGED =~ ^frontend/ ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+                echo "backend=$([[ $CHANGED =~ ^backend/ ]] && echo true || echo false)" >> $GITHUB_OUTPUT
     
-      - name: Set version        
-        id: version
-        run: |
-          VERSION=$(date +%Y.%m.%d.%H%M%S)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+            - name: Set version        
+              id: version
+              run: |
+                VERSION=$(date +%Y.%m.%d.%H%M%S)
+                echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+    build-frontend:
+        needs: preflight
+        #if: needs.preflight.outputs.frontend == 'true'
+        outputs:
+            image_uri: ${{ steps.meta.outputs.image_uri }}
+        runs-on: ubuntu-latest
+        steps:
+       
+            - uses: actions/checkout@v3
 
-  build-frontend:
-    needs: preflight
-    if: needs.preflight.outputs.frontend == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v4
-        with:
+            - name: Login to DockerHub
+              uses: docker/login-action@v4
+              with:
                 username: ${{ vars.DOCKERHUB_USERNAME }}
                 password: ${{ secrets.DOCKERHUB_TOKEN }}
             
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v4
 
-      - name: Build and push
-        uses: docker/build-push-action@v7
-        with:
-            platforms: linux/amd64,linux/arm64
-            push: true
-            tags: ${{ vars.DOCKERHUB_USERNAME }}/tictactoe-frontend:${{github.ref_name}}-${{ needs.preflight.outputs.version }}
+            - name: Compute image tag
+              id: meta
+              run: |
+                IMAGE_URI=${{ vars.DOCKERHUB_USERNAME }}/tictactoe-frontend:${{ github.ref_name }}-${{ needs.preflight.outputs.version }}
+                echo "image_uri=$IMAGE_URI" >> "$GITHUB_OUTPUT"
+
+            - name: Build and push
+              uses: docker/build-push-action@v7
+              with:
+                platforms: linux/amd64,linux/arm64
+                push: true
+                tags: ${{ steps.meta.outputs.image_uri }}
+
+    deploy-frontend:
+        needs: [preflight, build-frontend]
+        if: needs.preflight.outputs.frontend == 'true'
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: terraform
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Authenticate to Google Cloud
+              uses: google-github-actions/auth@v2
+              with:
+                workload_identity_provider: projects/123456789/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+                service_account: github-deployer@your-gcp-project-id.iam.gserviceaccount.com
+            
+            - name: Set up gcloud
+              uses: google-github-actions/setup-gcloud@v3
+              with:
+                version: ">= 363.0.0"
+
+            - name: Set up Terraform
+              uses: hashicorp/setup-terraform@v3
+
+            - name: Terraform Init
+              run: terraform init
+
+            - name: Terraform Plan
+              run: |
+                terraform plan \
+                    -var-file=terraform.tfvars \
+                    -var="image_uri=${{ needs.build-frontend.outputs.image_uri }}" \
+                    -out=tfplan
+
+            - name: Terraform Apply
+              run: terraform apply -auto-approve tfplan
