@@ -64,7 +64,10 @@ jobs:
               with:
                 platforms: linux/amd64,linux/arm64
                 push: true
-                tags: ${{ steps.meta.outputs.image_uri }}
+                tags: |
+                    ${{ steps.meta.outputs.image_uri }}
+                    ${{ vars.DOCKERHUB_USERNAME }}/tictactoe-frontend:latest
+
                 context: ./frontend
 
     deploy-frontend:
