@@ -22,32 +22,11 @@ jobs:
               id: find
               shell: bash
               run: |
-                BEFORE_SHA="${{ github.event.before }}"
-
-                if [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
-                CHANGED=$(git ls-files)
-                else
-                    CHANGED=$(git diff --name-only "$BEFORE_SHA" "${{ github.sha }}" || true)
-                fi
-
-                echo "Changed files:"
-                echo "$CHANGED"
-
-                if echo "$CHANGED" | grep -q '^frontend/'; then
-                    echo "frontend=true" >> "$GITHUB_OUTPUT"
-                    echo "frontend=true"
-                else
-                    echo "frontend=false" >> "$GITHUB_OUTPUT"
-                    echo "frontend=false"
-                fi
-
-                if echo "$CHANGED" | grep -q '^backend/'; then
-                    echo "backend=true" >> "$GITHUB_OUTPUT"
-                    echo "backend=true"
-                else
-                    echo "backend=false" >> "$GITHUB_OUTPUT"
-                    echo "backend=false"
-                fi
+                CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} || true)
+                echo "frontend=$([[ $CHANGED =~ ^frontend/ ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+                echo "backend=$([[ $CHANGED =~ ^backend/ ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+                echo "frontend=$([[ $CHANGED =~ ^frontend/ ]] && echo true || echo false)"
+                echo "backend=$([[ $CHANGED =~ ^backend/ ]] && echo true || echo false)"
     
             - name: Set version        
               id: version
