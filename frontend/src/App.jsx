@@ -1,7 +1,7 @@
 import './index.css'
 import xIcon from './assets/X.svg'
 import oIcon from './assets/O.svg'
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect } from 'react'
 
 
 const Tile = ({value,enabled, onClick}) => {
