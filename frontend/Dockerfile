@@ -2,7 +2,7 @@ FROM node:current-bullseye-slim
 
 WORKDIR /app
 EXPOSE 8080
-RUN apk update && apk upgrade --no-cache
+RUN apt update && apt upgrade --no-cache
 COPY package*.json .
 RUN npm ci
 COPY . .
