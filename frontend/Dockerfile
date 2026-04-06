@@ -1,7 +1,8 @@
-FROM dhi.io/node:25-debian13-sfw-ent-dev
+FROM node:current-bullseye-slim
+
 WORKDIR /app
 EXPOSE 8080
-RUN apt update && apt upgrade
+RUN apk update && apk upgrade --no-cache
 COPY package*.json .
 RUN npm ci
 COPY . .
