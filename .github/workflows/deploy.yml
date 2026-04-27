@@ -20,6 +20,7 @@ jobs:
 
             - name: Find changed files
               id: find
+              shell: bash
               run: |
                 CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} || true)
                 echo "frontend=$([[ $CHANGED =~ ^frontend/ ]] && echo true || echo false)" >> $GITHUB_OUTPUT
