@@ -1,7 +1,7 @@
 import './index.css'
 import xIcon from './assets/X.svg'
 import oIcon from './assets/O.svg'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 
 const Tile = ({value,enabled, onClick}) => {
@@ -27,11 +27,22 @@ const checkWinner = (board) => {
 }
 
 const Grid = () => {
+  const players = ['X', 'O']
+  const [xScore, setXScore] = useState(0)
+  const [oScore, setOScore] = useState(0)
   const [board, setBoard] = useState([null,null,null,null,null,null,null,null,null])
-  const [turn, setTurn] = useState('X')
+  const [turn, setTurn] = useState(players[Math.floor(Math.random() * 2)])
   const winner = checkWinner(board)
   const isDraw = board.every(cell => cell !== null) && winner === null
-  const status = winner ? `Winner: ${winner}` : isDraw ? 'Draw' : `Next player: ${turn}`
+  const status = winner ? `Winner: ${winner}` : isDraw ? 'Draw' : `Current player: ${turn}`
+
+  useEffect(() => {
+    if (winner === 'X') {
+      setXScore(prev => prev + 1)
+    } else if (winner === 'O') {
+      setOScore(prev => prev + 1)
+    }
+  }, [winner])
 
   const handleClick = (i) => {
     if (board[i] == null && winner == null && !isDraw){
@@ -44,37 +55,40 @@ const Grid = () => {
 
   const reset = () => {
     setBoard([null,null,null,null,null,null,null,null,null])
-    setTurn('X')
+    setTurn(players[Math.floor(Math.random() * 2)])
   }
 
   return (
     <div className="game">
       <div className="board">
-      <div className="grid-container">
-        {board.map((cellValue, i) => (
-          <Tile
-            key={i}
-            value={cellValue}
-            enabled={cellValue === null && !winner && !isDraw}
-            onClick={() => handleClick(i)}
-          />
-        ))}
+        <div className="grid-container">
+          {board.map((cellValue, i) => (
+            <Tile
+              key={i}
+              value={cellValue}
+              enabled={cellValue === null && !winner && !isDraw}
+              onClick={() => handleClick(i)}
+            />
+          ))}
+        </div>
+        <div className="horiz h1" />
+        <div className="horiz h2" />
       </div>
-
-  <div className="horiz h1" />
-  <div className="horiz h2" />
-</div>
-
       <div className="controls">
         <p className="status">{status}</p>
         <button className="reset" onClick={reset}>reset</button>
+      </div>
+      <div className="scores">
+        <p className="score-label">X Wins</p>
+        <p className="score">{xScore}</p>
+        <p className="score-label">O Wins</p>
+        <p className="score">{oScore}</p>
       </div>
     </div>
   )
 }
 
 function App() {
-
   return (
     <>
       <Grid/>
